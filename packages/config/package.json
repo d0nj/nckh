@@ -1,0 +1,17 @@
+{
+  "name": "@thai-binh/config",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./env": "./src/env.ts"
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:dev",
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@thai-binh/utils",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./http": "./src/http.ts",
+    "./response": "./src/response.ts",
+    "./circuit-breaker": "./src/circuit-breaker.ts",
+    "./auth": "./src/auth.ts"
+  },
+  "dependencies": {
+    "hono": "catalog:",
+    "opossum": "^9.0.0",
+    "jose": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:dev",
+    "typescript": "catalog:"
+  }
+}

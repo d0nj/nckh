@@ -1,0 +1,29 @@
+{
+  "name": "@thai-binh/notification-service",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir=dist --target=bun",
+    "start": "bun run dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "catalog:",
+    "bullmq": "catalog:",
+    "ioredis": "catalog:",
+    "@thai-binh/database": "workspace:*",
+    "@thai-binh/types": "workspace:*",
+    "@thai-binh/utils": "workspace:*",
+    "@thai-binh/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:dev",
+    "dotenv": "^17.4.0",
+    "typescript": "catalog:",
+    "vitest": "catalog:dev"
+  }
+}

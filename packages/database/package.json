@@ -1,0 +1,28 @@
+{
+  "name": "@thai-binh/database",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./user": "./src/schemas/user.ts",
+    "./course": "./src/schemas/course.ts",
+    "./enrollment": "./src/schemas/enrollment.ts"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "drizzle-orm": "catalog:",
+    "pg": "catalog:"
+  },
+  "devDependencies": {
+    "drizzle-kit": "catalog:dev",
+    "@types/bun": "catalog:dev",
+    "@types/pg": "catalog:",
+    "typescript": "catalog:"
+  }
+}

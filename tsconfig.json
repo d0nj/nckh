@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@thai-binh/database": ["packages/database/src"],
+      "@thai-binh/database/*": ["packages/database/src/*"],
+      "@thai-binh/auth": ["packages/auth/src"],
+      "@thai-binh/types": ["packages/types/src"],
+      "@thai-binh/utils": ["packages/utils/src"],
+      "@thai-binh/config": ["packages/config/src"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "**/dist/**"]
+}

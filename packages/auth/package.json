@@ -1,0 +1,17 @@
+{
+  "name": "@thai-binh/auth",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts"
+  },
+  "dependencies": {
+    "better-auth": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:dev",
+    "typescript": "catalog:"
+  }
+}
