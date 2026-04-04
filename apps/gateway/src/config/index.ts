@@ -1,6 +1,3 @@
-import { config } from 'dotenv';
-config();
-
 export const PORT = process.env.PORT || 8000;
 export const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
 

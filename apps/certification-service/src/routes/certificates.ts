@@ -131,7 +131,7 @@ app.post('/', zValidator('json', issueCertificateSchema), async (c) => {
   // Execute in transaction
   const result = await db.transaction(async (tx) => {
     // Create registry entry
-    const [entry] = await tx.insert(tx.$schema.registryBookEntries).values({
+    const [entry] = await tx.insert(schema.registryBookEntries).values({
       organizationId,
       registryBookId: book.id,
       entryNumber,
@@ -150,16 +150,16 @@ app.post('/', zValidator('json', issueCertificateSchema), async (c) => {
     }).returning();
     
     // Update blank status
-    await tx.update(tx.$schema.certificateBlanks)
+    await tx.update(schema.certificateBlanks)
       .set({
         status: 'used',
         usedForCertificateId: entry.id,
         usedAt: new Date(),
       })
-      .where(eq(tx.$schema.certificateBlanks.id, blank.id));
+      .where(eq(schema.certificateBlanks.id, blank.id));
     
     // Create certificate
-    const [certificate] = await tx.insert(tx.$schema.certificates).values({
+    const [certificate] = await tx.insert(schema.certificates).values({
       organizationId,
       registryEntryId: entry.id,
       studentId: data.studentId,
@@ -171,7 +171,7 @@ app.post('/', zValidator('json', issueCertificateSchema), async (c) => {
     }).returning();
     
     // Create workflow steps
-    await tx.insert(tx.$schema.certificateWorkflowSteps).values([
+    await tx.insert(schema.certificateWorkflowSteps).values([
       {
         certificateId: certificate.id,
         organizationId,

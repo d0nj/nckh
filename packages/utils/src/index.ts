@@ -3,21 +3,18 @@
 // Thai Binh University Training Platform
 // ============================================
 
-// HTTP utilities
+// HTTP utilities (response data objects, not Hono responses)
 export {
   type ApiResponse,
   type ApiError,
   type ResponseMeta,
   success,
-  success as successResponse,
   error,
-  error as errorResponse,
   validationError,
   notFoundError,
   unauthorizedError,
   forbiddenError,
   paginationMeta,
-  paginationMeta as paginatedResponse,
 } from './response';
 
 // HTTP client utilities
@@ -29,6 +26,10 @@ export {
   httpPost,
   httpPut,
   httpDelete,
+  // Hono-compatible response helpers
+  successResponse,
+  errorResponse,
+  paginatedResponse,
 } from './http';
 
 // Service base utilities

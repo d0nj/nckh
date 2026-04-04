@@ -8,6 +8,9 @@
     "./api": "./src/api.ts",
     "./errors": "./src/errors.ts"
   },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "zod": "catalog:"
   },

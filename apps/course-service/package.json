@@ -15,6 +15,8 @@
     "hono": "catalog:",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
+    "zod": "catalog:",
+    "@hono/zod-validator": "catalog:",
     "@thai-binh/database": "workspace:*",
     "@thai-binh/types": "workspace:*",
     "@thai-binh/utils": "workspace:*",
@@ -22,7 +24,6 @@
   },
   "devDependencies": {
     "@types/bun": "catalog:dev",
-    "dotenv": "^17.4.0",
     "typescript": "catalog:",
     "vitest": "catalog:dev"
   }

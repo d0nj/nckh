@@ -6,7 +6,7 @@ import { relations } from 'drizzle-orm';
 // Thai Binh University Training Platform
 // =============================================
 
-const studentSchema = pgSchema('student');
+export const studentSchema = pgSchema('student');
 
 // =============================================
 // 1. STUDENTS TABLE

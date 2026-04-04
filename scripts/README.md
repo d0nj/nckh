@@ -4,7 +4,47 @@ Startup and management scripts for Thai Binh University Training Platform.
 
 ## Available Scripts
 
-### Start Services
+### Database Services (Scoop/Native)
+
+For running PostgreSQL and Redis directly on Windows without Docker:
+
+**Setup Everything (Start + Initialize):**
+```powershell
+.\scripts\setup-databases.ps1          # Start and initialize databases
+.\scripts\setup-databases.ps1 -SkipInit # Start only, skip initialization
+```
+
+**Start Database Services:**
+```powershell
+.\scripts\start-databases.ps1
+```
+
+**Initialize Database (create schemas, run migrations):**
+```powershell
+.\scripts\init-database.ps1
+```
+
+**Stop Database Services:**
+```powershell
+.\scripts\stop-databases.ps1
+.\scripts\stop-databases.ps1 -Force    # Force kill processes
+```
+
+**Check Database Status:**
+```powershell
+.\scripts\status-databases.ps1
+```
+
+**Prerequisites for Database Scripts:**
+```powershell
+# Install Scoop (if not already installed)
+irm get.scoop.sh | iex
+
+# Install PostgreSQL and Redis via Scoop
+scoop install postgresql redis
+```
+
+### Application Services
 
 **PowerShell (Recommended for Windows):**
 ```powershell

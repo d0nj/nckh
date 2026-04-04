@@ -4,10 +4,10 @@ import { users, organizations } from './auth';
 import { students } from './student';
 import { courses } from './academic';
 
-export const certification = pgSchema('certification');
+export const certificationSchema = pgSchema('certification');
 
 // ========== PHÔI VĂN BẰNG (Certificate Blanks) ==========
-export const certificateBlankBatches = certification.table('certificate_blank_batches', {
+export const certificateBlankBatches = certificationSchema.table('certificate_blank_batches', {
   id: text('id').primaryKey(),
   organizationId: text('organization_id').notNull(),
   batchNumber: text('batch_number').notNull(),
@@ -22,7 +22,7 @@ export const certificateBlankBatches = certification.table('certificate_blank_ba
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
-export const certificateBlanks = certification.table('certificate_blanks', {
+export const certificateBlanks = certificationSchema.table('certificate_blanks', {
   id: text('id').primaryKey(),
   organizationId: text('organization_id').notNull(),
   batchId: text('batch_id').notNull(),
@@ -39,7 +39,7 @@ export const certificateBlanks = certification.table('certificate_blanks', {
 });
 
 // ========== SỔ GỐC (Registry Book) ==========
-export const registryBooks = certification.table('registry_books', {
+export const registryBooks = certificationSchema.table('registry_books', {
   id: text('id').primaryKey(),
   organizationId: text('organization_id').notNull(),
   bookNumber: text('book_number').notNull(),
@@ -51,7 +51,7 @@ export const registryBooks = certification.table('registry_books', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
-export const registryBookEntries = certification.table('registry_book_entries', {
+export const registryBookEntries = certificationSchema.table('registry_book_entries', {
   id: text('id').primaryKey(),
   organizationId: text('organization_id').notNull(),
   registryBookId: text('registry_book_id').notNull(),
@@ -91,7 +91,7 @@ export const registryBookEntries = certification.table('registry_book_entries', 
 });
 
 // ========== CERTIFICATES ==========
-export const certificates = certification.table('certificates', {
+export const certificates = certificationSchema.table('certificates', {
   id: text('id').primaryKey(),
   organizationId: text('organization_id').notNull(),
   registryEntryId: text('registry_entry_id').notNull().unique(),
@@ -110,7 +110,7 @@ export const certificates = certification.table('certificates', {
 });
 
 // Certificate workflow steps
-export const certificateWorkflowSteps = certification.table('certificate_workflow_steps', {
+export const certificateWorkflowSteps = certificationSchema.table('certificate_workflow_steps', {
   id: text('id').primaryKey(),
   certificateId: text('certificate_id').notNull(),
   organizationId: text('organization_id').notNull(),
@@ -124,7 +124,7 @@ export const certificateWorkflowSteps = certification.table('certificate_workflo
 });
 
 // Pre-check records
-export const preCheckRecords = certification.table('pre_check_records', {
+export const preCheckRecords = certificationSchema.table('pre_check_records', {
   id: text('id').primaryKey(),
   organizationId: text('organization_id').notNull(),
   studentId: text('student_id').notNull(),

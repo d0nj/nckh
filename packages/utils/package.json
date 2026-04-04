@@ -10,6 +10,9 @@
     "./circuit-breaker": "./src/circuit-breaker.ts",
     "./auth": "./src/auth.ts"
   },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "hono": "catalog:",
     "opossum": "^9.0.0",

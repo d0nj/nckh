@@ -22,7 +22,6 @@
   },
   "devDependencies": {
     "@types/bun": "catalog:dev",
-    "dotenv": "^17.4.0",
     "typescript": "catalog:",
     "vitest": "catalog:dev"
   }

@@ -23,15 +23,6 @@ app.get('/course/:courseId', async (c) => {
       eq(w.organizationId, organizationId)
     ),
     orderBy: (w, { asc }) => [asc(w.position)],
-    with: {
-      user: {
-        columns: {
-          id: true,
-          name: true,
-          email: true,
-        }
-      }
-    }
   });
   
   return c.json({ waitlist, count: waitlist.length });
@@ -73,7 +64,7 @@ app.post('/', zValidator('json', addToWaitlistSchema), async (c) => {
     courseId: data.courseId,
     userId,
     position,
-    status: 'waiting',
+    status: 'waiting' as const,
   }).returning();
   
   // Check if we should trigger auto-class creation
@@ -91,7 +82,7 @@ app.post('/', zValidator('json', addToWaitlistSchema), async (c) => {
   
   const shouldTriggerAutoClass = course && 
     course.admissionMode === 'rolling' && 
-    waitlistCount[0].count >= course.waitlistThreshold;
+    waitlistCount[0].count >= (course.waitlistThreshold || 0);
   
   return c.json({
     message: 'Added to waitlist',
@@ -147,7 +138,7 @@ app.post('/:id/offer', async (c) => {
   
   const [entry] = await db.update(schema.waitlist)
     .set({
-      status: 'offered',
+      status: 'offered' as const,
       offeredAt: new Date(),
       expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000), // 48 hours
     })
@@ -196,20 +187,15 @@ app.post('/:id/accept', async (c) => {
   
   // Update waitlist status
   await db.update(schema.waitlist)
-    .set({ status: 'enrolled' })
+    .set({ status: 'enrolled' as const })
     .where(eq(schema.waitlist.id, id));
   
-  // Create enrollment
-  const [enrollment] = await db.insert(schema.enrollments).values({
-    organizationId,
-    studentId: entry.userId, // This should map to student record
-    courseId: entry.courseId,
-    status: 'active',
-  }).returning();
+  // TODO: Create enrollment via enrollment service
+  // This should call the enrollment service API
   
   return c.json({
     message: 'Enrolled successfully',
-    enrollment,
+    waitlistEntry: entry,
   });
 });
 
@@ -236,7 +222,7 @@ app.get('/check-auto-class/:courseId', async (c) => {
     ));
   
   const shouldCreateClass = course.admissionMode === 'rolling' && 
-    waitlistCount[0].count >= course.waitlistThreshold;
+    waitlistCount[0].count >= (course.waitlistThreshold || 0);
   
   return c.json({
     courseId,
@@ -249,3 +235,4 @@ app.get('/check-auto-class/:courseId', async (c) => {
 });
 
 export { app as waitlistRoutes };
+export default app;

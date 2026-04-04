@@ -1,5 +1,5 @@
 import {
-  createServiceClients,
+  createServiceClients as createCircuitBreakerClients,
   defaultServiceConfigs,
   type ServiceClient,
 } from '@thai-binh/utils/circuit-breaker';
@@ -9,7 +9,7 @@ import {
  * Uses the shared circuit breaker factory to eliminate code duplication
  */
 export function createServiceClients() {
-  return createServiceClients({
+  return createCircuitBreakerClients({
     user: defaultServiceConfigs.user,
     course: defaultServiceConfigs.course,
     enrollment: defaultServiceConfigs.enrollment,

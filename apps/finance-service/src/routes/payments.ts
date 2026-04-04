@@ -63,7 +63,10 @@ app.post("/create", zValidator("json", createPaymentSchema), async (c) => {
     });
 
     if (!result.success) {
-      return c.json(error("PAYMENT_CREATION_FAILED", result.error || "Unknown error"), 400);
+      return c.json(
+        error("PAYMENT_CREATION_FAILED", result.error || "Unknown error"),
+        400,
+      );
     }
 
     return c.json(
@@ -73,9 +76,8 @@ app.post("/create", zValidator("json", createPaymentSchema), async (c) => {
           transactionRef: result.transactionRef,
         },
         undefined,
-        "Payment URL created successfully"
       ),
-      201
+      201,
     );
   } catch (err) {
     console.error("Create payment error:", err);
@@ -126,7 +128,7 @@ app.get("/vnpay-return", async (c) => {
     if (!result.isVerified) {
       return c.json(
         error("INVALID_CALLBACK", "Payment callback verification failed"),
-        400
+        400,
       );
     }
 
@@ -139,11 +141,14 @@ app.get("/vnpay-return", async (c) => {
         orderInfo: result.orderInfo,
         bankCode: result.bankCode,
         payDate: result.payDate,
-      })
+      }),
     );
   } catch (err) {
     console.error("Return URL processing error:", err);
-    return c.json(error("INTERNAL_ERROR", "Failed to process payment return"), 500);
+    return c.json(
+      error("INTERNAL_ERROR", "Failed to process payment return"),
+      500,
+    );
   }
 });
 
@@ -156,7 +161,7 @@ app.post("/query", zValidator("json", queryTransactionSchema), async (c) => {
   try {
     const result = await service.queryTransaction(
       data.transactionRef,
-      data.transactionDate
+      data.transactionDate,
     );
 
     if (!result.success) {
@@ -183,14 +188,17 @@ app.post("/refund", zValidator("json", refundSchema), async (c) => {
       data.transactionDate,
       data.amount,
       userId,
-      data.reason
+      data.reason,
     );
 
     if (!result.success) {
-      return c.json(error("REFUND_FAILED", result.error || "Refund failed"), 400);
+      return c.json(
+        error("REFUND_FAILED", result.error || "Refund failed"),
+        400,
+      );
     }
 
-    return c.json(success(result.data, undefined, "Refund processed successfully"));
+    return c.json(success(result.data, undefined));
   } catch (err) {
     console.error("Refund processing error:", err);
     return c.json(error("INTERNAL_ERROR", "Failed to process refund"), 500);
@@ -204,7 +212,8 @@ app.get("/:transactionRef", async (c) => {
 
   try {
     const payment = await db.query.payments.findFirst({
-      where: (payments, { eq }) => eq(payments.transactionReference, transactionRef),
+      where: (payments, { eq }) =>
+        eq(payments.transactionReference, transactionRef),
     });
 
     if (!payment) {

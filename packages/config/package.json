@@ -7,6 +7,9 @@
     ".": "./src/index.ts",
     "./env": "./src/env.ts"
   },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "zod": "catalog:"
   },
