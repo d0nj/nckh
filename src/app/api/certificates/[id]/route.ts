@@ -18,11 +18,11 @@ export async function GET(
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { id } = await params;
-    const cert = await db
+    const [cert] = await db
       .select()
       .from(certificates)
       .where(eq(certificates.id, id))
-      .get();
+      .limit(1);
 
     if (!cert) return NextResponse.json({ error: "Certificate not found" }, { status: 404 });
 
@@ -98,8 +98,8 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const deleted = await db.delete(certificates).where(eq(certificates.id, id)).returning();
-    if (!deleted.length) return NextResponse.json({ error: "Certificate not found" }, { status: 404 });
+    const [deleted] = await db.delete(certificates).where(eq(certificates.id, id)).returning();
+    if (!deleted) return NextResponse.json({ error: "Certificate not found" }, { status: 404 });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(error);

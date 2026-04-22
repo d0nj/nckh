@@ -5,7 +5,7 @@ import { db } from "@/db";
 import { debts, payments } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
-import { vnpay, VNPAY_RETURN_URL } from "@/lib/vnpay";
+import { vnpay } from "@/lib/vnpay";
 import { ProductCode, VnpLocale, dateFormat } from "vnpay";
 
 /**
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
   const txnRef = Array.from(randomBytes, (b) => alphabet[b % alphabet.length]).join("");
 
   // VNPay requires vnp_Amount to be an integer (library multiplies by 100).
-  // remainingAmount is SQLite real, so round to avoid float issues.
+  // remainingAmount is a real type, so round to avoid float issues.
   const amount = Math.round(debt.remainingAmount);
 
   const newPayment = {
@@ -101,7 +101,9 @@ export async function POST(req: NextRequest) {
     vnp_TxnRef: txnRef,
     vnp_OrderInfo: removeDiacritics(`Thanh toan ${debt.reason}`),
     vnp_OrderType: ProductCode.Other,
-    vnp_ReturnUrl: VNPAY_RETURN_URL,
+    vnp_ReturnUrl:
+      process.env.VNPAY_RETURN_URL ||
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/payment/vnpay-return`,
     vnp_Locale: VnpLocale.VN,
     vnp_ExpireDate: dateFormat(new Date(Date.now() + 15 * 60 * 1000)),
   });

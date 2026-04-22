@@ -24,7 +24,7 @@ function LoadingSkeleton() {
 }
 
 async function ExamDetailContent({ id }: { id: string }) {
-  const exam = await db.select().from(exams).where(eq(exams.id, id)).get();
+  const exam = await db.select().from(exams).where(eq(exams.id, id)).limit(1).then(rows => rows[0]);
   if (!exam) notFound();
 
   // Fetch all exam details in parallel
@@ -37,7 +37,8 @@ async function ExamDetailContent({ id }: { id: string }) {
     }).from(classes)
       .leftJoin(courses, eq(classes.courseId, courses.id))
       .where(eq(classes.id, exam.classId))
-      .get(),
+      .limit(1)
+      .then(rows => rows[0]),
 
     db.select({
       id: grades.id,

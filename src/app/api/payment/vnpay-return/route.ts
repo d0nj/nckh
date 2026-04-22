@@ -8,14 +8,13 @@ export async function GET(req: Request) {
 
   const result = vnpay.verifyReturnUrl(query);
 
-  // Only pass txnRef to the result page — actual status is fetched from DB
-  // This prevents URL parameter spoofing
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || new URL(req.url).origin;
+
   if (result.isVerified && result.vnp_TxnRef) {
     const redirectPath = `/portal/payments/result?txnRef=${result.vnp_TxnRef}`;
-    return NextResponse.redirect(new URL(redirectPath, req.url));
+    return NextResponse.redirect(new URL(redirectPath, baseUrl));
   }
 
-  // Invalid signature — no txnRef to look up
   const redirectPath = `/portal/payments/result?error=invalid_signature`;
-  return NextResponse.redirect(new URL(redirectPath, req.url));
+  return NextResponse.redirect(new URL(redirectPath, baseUrl));
 }

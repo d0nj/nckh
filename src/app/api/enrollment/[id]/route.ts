@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { enrollments, classes, user } from "@/db/schema";
+import { enrollments } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 async function getSession() {
@@ -18,15 +18,14 @@ export async function GET(
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { id } = await params;
-    const enrollment = await db
+    const [enrollment] = await db
       .select()
       .from(enrollments)
       .where(eq(enrollments.id, id))
-      .get();
+      .limit(1);
 
     if (!enrollment) return NextResponse.json({ error: "Enrollment not found" }, { status: 404 });
 
-    // IDOR fix: students can only view their own enrollments
     if (session.user.role === "student" && enrollment.studentId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -53,7 +52,6 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
 
-    // Mass assignment fix: only allow updating status
     const updateData: Record<string, unknown> = {};
     if (body.status !== undefined) {
       updateData.status = body.status;

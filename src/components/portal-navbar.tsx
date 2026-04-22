@@ -86,6 +86,7 @@ export function PortalNavbar() {
                           onClick={() => setIsOpen(false)}
                         />
                       }
+                      nativeButton={false}
                       variant={isActive ? "secondary" : "ghost"}
                       className="w-full justify-start"
                     >
@@ -133,6 +134,7 @@ export function PortalNavbar() {
               <Button
                 key={item.href}
                 render={<Link href={item.href} />}
+                nativeButton={false}
                 variant="ghost"
                 size="sm"
                 className={`relative h-10 rounded-none hover:text-primary transition-colors ${

@@ -18,7 +18,7 @@ export async function GET(
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { id } = await params;
-    const debt = await db.select().from(debts).where(eq(debts.id, id)).get();
+    const [debt] = await db.select().from(debts).where(eq(debts.id, id)).limit(1);
     if (!debt) return NextResponse.json({ error: "Debt not found" }, { status: 404 });
 
     // Students can only view their own debts

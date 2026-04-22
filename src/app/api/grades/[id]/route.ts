@@ -18,7 +18,7 @@ export async function GET(
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { id } = await params;
-    const grade = await db
+    const [grade] = await db
       .select({
         id: grades.id,
         examId: grades.examId,
@@ -36,7 +36,7 @@ export async function GET(
       .leftJoin(exams, eq(grades.examId, exams.id))
       .leftJoin(user, eq(grades.studentId, user.id))
       .where(eq(grades.id, id))
-      .get();
+      .limit(1);
 
     if (!grade) return NextResponse.json({ error: "Grade not found" }, { status: 404 });
 

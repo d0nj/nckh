@@ -66,6 +66,14 @@ const DEBT_STATUS: Record<string, { label: string; color: string }> = {
   waived: { label: "Miễn giảm", color: "bg-muted text-muted-foreground hover:bg-muted" },
 };
 
+function getEffectiveDebtStatus(debt: { status: string | null; dueDate: string | null }) {
+  if (debt.status !== "active") return debt.status || "active";
+  if (!debt.dueDate) return "active";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(debt.dueDate) < today ? "overdue" : "active";
+}
+
 async function PaymentsContent({ userId }: { userId: string }) {
   const { userPayments, userDebts } = await getStudentPaymentsAndDebts(userId);
 
@@ -78,10 +86,13 @@ async function PaymentsContent({ userId }: { userId: string }) {
     .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
 
   const totalDebt = userDebts
-    .filter((d) => d.status === "active" || d.status === "overdue")
+    .filter((d) => {
+      const effective = getEffectiveDebtStatus(d);
+      return effective === "active" || effective === "overdue";
+    })
     .reduce((sum, d) => sum + (Number(d.remainingAmount) || 0), 0);
 
-  const overdueCount = userDebts.filter((d) => d.status === "overdue").length;
+  const overdueCount = userDebts.filter((d) => getEffectiveDebtStatus(d) === "overdue").length;
 
   return (
     <>
@@ -227,8 +238,9 @@ async function PaymentsContent({ userId }: { userId: string }) {
               </p>
             ) : (
               userDebts.map((debt, index) => {
+                const effectiveStatus = getEffectiveDebtStatus(debt);
                 const statusInfo =
-                  DEBT_STATUS[debt.status || "active"] || DEBT_STATUS.active;
+                  DEBT_STATUS[effectiveStatus] || DEBT_STATUS.active;
 
                 return (
                   <div key={debt.id}>
@@ -265,8 +277,8 @@ async function PaymentsContent({ userId }: { userId: string }) {
                         >
                           {statusInfo.label}
                         </Badge>
-                        {(debt.status === "active" ||
-                          debt.status === "overdue") && (
+                        {(effectiveStatus === "active" ||
+                          effectiveStatus === "overdue") && (
                           <PayDebtButton
                             debtId={debt.id}
                             amount={Number(debt.remainingAmount) || 0}

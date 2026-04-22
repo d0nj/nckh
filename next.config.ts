@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  allowedDevOrigins: ["borax-stilt-ninetieth.ngrok-free.dev"],
   async headers() {
     return [
       {

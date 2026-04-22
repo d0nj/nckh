@@ -1,41 +1,43 @@
 import {
-  sqliteTable,
+  pgTable,
   text,
   integer,
   real,
-} from "drizzle-orm/sqlite-core";
+  boolean,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // =============================================
 // BETTER AUTH CORE TABLES
 // =============================================
 
-export const user = sqliteTable("user", {
+export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  emailVerified: integer("emailVerified", { mode: "boolean" }).notNull().default(false),
+  emailVerified: boolean("emailVerified").notNull().default(false),
   image: text("image"),
-  createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updatedAt", { mode: "timestamp" }).notNull(),
+  createdAt: timestamp("createdAt").notNull(),
+  updatedAt: timestamp("updatedAt").notNull(),
   role: text("role").default("student"),
-  banned: integer("banned", { mode: "boolean" }).default(false),
+  banned: boolean("banned").default(false),
   banReason: text("banReason"),
-  banExpires: integer("banExpires", { mode: "timestamp" }),
+  banExpires: timestamp("banExpires"),
   // Extended profile fields
   phone: text("phone"),
-  gender: text("gender", { enum: ["male", "female", "other"] }),
+  gender: text("gender"),
   dateOfBirth: text("dateOfBirth"),
   address: text("address"),
   idNumber: text("idNumber"), // CCCD/CMND
 });
 
-export const session = sqliteTable("session", {
+export const session = pgTable("session", {
   id: text("id").primaryKey(),
-  expiresAt: integer("expiresAt", { mode: "timestamp" }).notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
   token: text("token").notNull().unique(),
-  createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updatedAt", { mode: "timestamp" }).notNull(),
+  createdAt: timestamp("createdAt").notNull(),
+  updatedAt: timestamp("updatedAt").notNull(),
   ipAddress: text("ipAddress"),
   userAgent: text("userAgent"),
   userId: text("userId")
@@ -44,7 +46,7 @@ export const session = sqliteTable("session", {
   impersonatedBy: text("impersonatedBy"),
 });
 
-export const account = sqliteTable("account", {
+export const account = pgTable("account", {
   id: text("id").primaryKey(),
   accountId: text("accountId").notNull(),
   providerId: text("providerId").notNull(),
@@ -54,39 +56,39 @@ export const account = sqliteTable("account", {
   accessToken: text("accessToken"),
   refreshToken: text("refreshToken"),
   idToken: text("idToken"),
-  accessTokenExpiresAt: integer("accessTokenExpiresAt", { mode: "timestamp" }),
-  refreshTokenExpiresAt: integer("refreshTokenExpiresAt", { mode: "timestamp" }),
+  accessTokenExpiresAt: timestamp("accessTokenExpiresAt"),
+  refreshTokenExpiresAt: timestamp("refreshTokenExpiresAt"),
   scope: text("scope"),
   password: text("password"),
-  createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updatedAt", { mode: "timestamp" }).notNull(),
+  createdAt: timestamp("createdAt").notNull(),
+  updatedAt: timestamp("updatedAt").notNull(),
 });
 
-export const verification = sqliteTable("verification", {
+export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
-  expiresAt: integer("expiresAt", { mode: "timestamp" }).notNull(),
-  createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updatedAt", { mode: "timestamp" }).notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("createdAt").notNull(),
+  updatedAt: timestamp("updatedAt").notNull(),
 });
 
 // =============================================
 // MODULE 2: QUẢN LÝ ĐÀO TẠO
 // =============================================
 
-export const programs = sqliteTable("programs", {
+export const programs = pgTable("programs", {
   id: text("id").primaryKey(),
   code: text("code").notNull().unique(),
   name: text("name").notNull(),
   description: text("description"),
-  type: text("type", { enum: ["short_term", "certificate", "diploma"] })
+  type: text("type")
     .notNull()
     .default("short_term"),
   durationHours: integer("duration_hours").notNull(),
   totalCredits: integer("total_credits"),
   tuitionFee: integer("tuition_fee").notNull().default(0),
-  status: text("status", { enum: ["active", "inactive", "draft"] })
+  status: text("status")
     .notNull()
     .default("draft"),
   createdAt: text("created_at")
@@ -97,7 +99,7 @@ export const programs = sqliteTable("programs", {
     .$defaultFn(() => new Date().toISOString()),
 });
 
-export const courses = sqliteTable("courses", {
+export const courses = pgTable("courses", {
   id: text("id").primaryKey(),
   programId: text("program_id")
     .notNull()
@@ -108,7 +110,7 @@ export const courses = sqliteTable("courses", {
   credits: integer("credits").notNull().default(0),
   hours: integer("hours").notNull().default(0),
   order: integer("sort_order").notNull().default(0),
-  status: text("status", { enum: ["active", "inactive"] })
+  status: text("status")
     .notNull()
     .default("active"),
   createdAt: text("created_at")
@@ -116,7 +118,7 @@ export const courses = sqliteTable("courses", {
     .$defaultFn(() => new Date().toISOString()),
 });
 
-export const classes = sqliteTable("classes", {
+export const classes = pgTable("classes", {
   id: text("id").primaryKey(),
   courseId: text("course_id")
     .notNull()
@@ -130,9 +132,7 @@ export const classes = sqliteTable("classes", {
   schedule: text("schedule"), // JSON string
   startDate: text("start_date").notNull(),
   endDate: text("end_date").notNull(),
-  status: text("status", {
-    enum: ["open", "closed", "in_progress", "completed", "cancelled"],
-  })
+  status: text("status")
     .notNull()
     .default("open"),
   createdAt: text("created_at")
@@ -144,7 +144,7 @@ export const classes = sqliteTable("classes", {
 // MODULE 3: TUYỂN SINH VÀ QUẢN LÝ SINH VIÊN
 // =============================================
 
-export const enrollments = sqliteTable("enrollments", {
+export const enrollments = pgTable("enrollments", {
   id: text("id").primaryKey(),
   studentId: text("student_id")
     .notNull()
@@ -152,17 +152,7 @@ export const enrollments = sqliteTable("enrollments", {
   classId: text("class_id")
     .notNull()
     .references(() => classes.id, { onDelete: "cascade" }),
-  status: text("status", {
-    enum: [
-      "pending",
-      "approved",
-      "waitlisted",
-      "enrolled",
-      "completed",
-      "dropped",
-      "rejected",
-    ],
-  })
+  status: text("status")
     .notNull()
     .default("pending"),
   enrolledAt: text("enrolled_at")
@@ -173,7 +163,7 @@ export const enrollments = sqliteTable("enrollments", {
   note: text("note"),
 });
 
-export const studentProfiles = sqliteTable("student_profiles", {
+export const studentProfiles = pgTable("student_profiles", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()
@@ -190,15 +180,13 @@ export const studentProfiles = sqliteTable("student_profiles", {
 // MODULE 4: QUẢN LÝ THI VÀ ĐIỂM
 // =============================================
 
-export const exams = sqliteTable("exams", {
+export const exams = pgTable("exams", {
   id: text("id").primaryKey(),
   classId: text("class_id")
     .notNull()
     .references(() => classes.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
-  type: text("type", {
-    enum: ["midterm", "final", "quiz", "assignment", "practical"],
-  })
+  type: text("type")
     .notNull()
     .default("final"),
   examDate: text("exam_date").notNull(),
@@ -208,9 +196,7 @@ export const exams = sqliteTable("exams", {
   duration: integer("duration"),
   maxScore: real("max_score").notNull().default(10),
   weight: real("weight").notNull().default(1),
-  status: text("status", {
-    enum: ["scheduled", "in_progress", "completed", "cancelled"],
-  })
+  status: text("status")
     .notNull()
     .default("scheduled"),
   createdAt: text("created_at")
@@ -218,7 +204,7 @@ export const exams = sqliteTable("exams", {
     .$defaultFn(() => new Date().toISOString()),
 });
 
-export const grades = sqliteTable("grades", {
+export const grades = pgTable("grades", {
   id: text("id").primaryKey(),
   examId: text("exam_id")
     .notNull()
@@ -228,9 +214,7 @@ export const grades = sqliteTable("grades", {
     .references(() => user.id, { onDelete: "cascade" }),
   score: real("score"),
   letterGrade: text("letter_grade"),
-  status: text("status", {
-    enum: ["pending", "graded", "appealed", "finalized"],
-  })
+  status: text("status")
     .notNull()
     .default("pending"),
   gradedBy: text("graded_by").references(() => user.id),
@@ -238,7 +222,7 @@ export const grades = sqliteTable("grades", {
   note: text("note"),
 });
 
-export const gradeAppeals = sqliteTable("grade_appeals", {
+export const gradeAppeals = pgTable("grade_appeals", {
   id: text("id").primaryKey(),
   gradeId: text("grade_id")
     .notNull()
@@ -247,9 +231,7 @@ export const gradeAppeals = sqliteTable("grade_appeals", {
     .notNull()
     .references(() => user.id),
   reason: text("reason").notNull(),
-  status: text("status", {
-    enum: ["pending", "reviewing", "approved", "rejected"],
-  })
+  status: text("status")
     .notNull()
     .default("pending"),
   resolvedBy: text("resolved_by").references(() => user.id),
@@ -261,19 +243,17 @@ export const gradeAppeals = sqliteTable("grade_appeals", {
   resolvedAt: text("resolved_at"),
 });
 
-export const examBank = sqliteTable("exam_bank", {
+export const examBank = pgTable("exam_bank", {
   id: text("id").primaryKey(),
   courseId: text("course_id")
     .notNull()
     .references(() => courses.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   content: text("content"),
-  type: text("type", {
-    enum: ["multiple_choice", "essay", "practical", "mixed"],
-  })
+  type: text("type")
     .notNull()
     .default("mixed"),
-  difficulty: text("difficulty", { enum: ["easy", "medium", "hard"] })
+  difficulty: text("difficulty")
     .notNull()
     .default("medium"),
   createdBy: text("created_by").references(() => user.id),
@@ -286,7 +266,7 @@ export const examBank = sqliteTable("exam_bank", {
 // MODULE 5: QUẢN LÝ CẤP BẰNG VÀ CHỨNG CHỈ
 // =============================================
 
-export const certificates = sqliteTable("certificates", {
+export const certificates = pgTable("certificates", {
   id: text("id").primaryKey(),
   studentId: text("student_id")
     .notNull()
@@ -296,15 +276,11 @@ export const certificates = sqliteTable("certificates", {
     .references(() => programs.id),
   certificateNumber: text("certificate_number").notNull().unique(),
   registryNumber: text("registry_number").notNull(),
-  type: text("type", { enum: ["certificate", "diploma"] }).notNull(),
+  type: text("type").notNull(),
   issueDate: text("issue_date").notNull(),
-  classification: text("classification", {
-    enum: ["excellent", "good", "fair", "average"],
-  }),
+  classification: text("classification"),
   gpa: real("gpa"),
-  status: text("status", {
-    enum: ["pending", "approved", "printed", "issued", "revoked"],
-  })
+  status: text("status")
     .notNull()
     .default("pending"),
   approvedBy: text("approved_by").references(() => user.id),
@@ -318,18 +294,18 @@ export const certificates = sqliteTable("certificates", {
     .$defaultFn(() => new Date().toISOString()),
 });
 
-export const certificateTemplates = sqliteTable("certificate_templates", {
+export const certificateTemplates = pgTable("certificate_templates", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
-  type: text("type", { enum: ["certificate", "diploma"] }).notNull(),
+  type: text("type").notNull(),
   content: text("content"),
-  isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+  isActive: boolean("is_active").notNull().default(true),
   createdAt: text("created_at")
     .notNull()
     .$defaultFn(() => new Date().toISOString()),
 });
 
-export const blankCertificates = sqliteTable("blank_certificates", {
+export const blankCertificates = pgTable("blank_certificates", {
   id: text("id").primaryKey(),
   batchNumber: text("batch_number").notNull(),
   serialStart: text("serial_start").notNull(),
@@ -339,9 +315,7 @@ export const blankCertificates = sqliteTable("blank_certificates", {
   destroyedQuantity: integer("destroyed_quantity").notNull().default(0),
   receivedDate: text("received_date").notNull(),
   receivedBy: text("received_by").references(() => user.id),
-  status: text("status", {
-    enum: ["available", "depleted", "destroyed"],
-  })
+  status: text("status")
     .notNull()
     .default("available"),
   destroyReport: text("destroy_report"),
@@ -354,7 +328,7 @@ export const blankCertificates = sqliteTable("blank_certificates", {
 // MODULE 6: TÀI CHÍNH VÀ KẾ TOÁN
 // =============================================
 
-export const payments = sqliteTable("payments", {
+export const payments = pgTable("payments", {
   id: text("id").primaryKey(),
   studentId: text("student_id")
     .notNull()
@@ -362,19 +336,13 @@ export const payments = sqliteTable("payments", {
   enrollmentId: text("enrollment_id").references(() => enrollments.id),
   debtId: text("debt_id").references(() => debts.id),
   amount: integer("amount").notNull(),
-  type: text("type", {
-    enum: ["tuition", "exam_fee", "certificate_fee", "other"],
-  })
+  type: text("type")
     .notNull()
     .default("tuition"),
-  method: text("method", {
-    enum: ["cash", "bank_transfer", "credit_card", "e_wallet", "online"],
-  })
+  method: text("method")
     .notNull()
     .default("cash"),
-  status: text("status", {
-    enum: ["pending", "completed", "failed", "refunded"],
-  })
+  status: text("status")
     .notNull()
     .default("pending"),
   transactionId: text("transaction_id").unique(),
@@ -386,7 +354,7 @@ export const payments = sqliteTable("payments", {
     .$defaultFn(() => new Date().toISOString()),
 });
 
-export const invoices = sqliteTable("invoices", {
+export const invoices = pgTable("invoices", {
   id: text("id").primaryKey(),
   paymentId: text("payment_id").references(() => payments.id),
   invoiceNumber: text("invoice_number").notNull().unique(),
@@ -396,9 +364,7 @@ export const invoices = sqliteTable("invoices", {
   amount: integer("amount").notNull(),
   tax: integer("tax").notNull().default(0),
   totalAmount: integer("total_amount").notNull(),
-  status: text("status", {
-    enum: ["draft", "issued", "paid", "cancelled"],
-  })
+  status: text("status")
     .notNull()
     .default("draft"),
   issuedAt: text("issued_at"),
@@ -408,7 +374,7 @@ export const invoices = sqliteTable("invoices", {
     .$defaultFn(() => new Date().toISOString()),
 });
 
-export const debts = sqliteTable("debts", {
+export const debts = pgTable("debts", {
   id: text("id").primaryKey(),
   studentId: text("student_id")
     .notNull()
@@ -417,9 +383,7 @@ export const debts = sqliteTable("debts", {
   remainingAmount: integer("remaining_amount").notNull(),
   reason: text("reason").notNull(),
   dueDate: text("due_date"),
-  status: text("status", {
-    enum: ["active", "paid", "overdue", "waived"],
-  })
+  status: text("status")
     .notNull()
     .default("active"),
   createdAt: text("created_at")
@@ -431,28 +395,17 @@ export const debts = sqliteTable("debts", {
 // MODULE 8: THÔNG BÁO
 // =============================================
 
-export const notifications = sqliteTable("notifications", {
+export const notifications = pgTable("notifications", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   content: text("content").notNull(),
-  type: text("type", {
-    enum: [
-      "info",
-      "warning",
-      "success",
-      "error",
-      "enrollment",
-      "grade",
-      "payment",
-      "certificate",
-    ],
-  })
+  type: text("type")
     .notNull()
     .default("info"),
-  isRead: integer("is_read", { mode: "boolean" }).notNull().default(false),
+  isRead: boolean("is_read").notNull().default(false),
   link: text("link"),
   createdAt: text("created_at")
     .notNull()

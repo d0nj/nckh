@@ -12,8 +12,11 @@ export function proxy(request: NextRequest) {
     return addSecurityHeaders(NextResponse.next());
   }
 
-  // Check for session cookie
-  const sessionCookie = request.cookies.get("better-auth.session_token");
+  const sessionCookie =
+    request.cookies.get("better-auth.session_token") ??
+    request.cookies
+      .getAll()
+      .find((c) => c.name.endsWith(".session_token"));
 
   // Protect portal routes
   if (pathname.startsWith("/portal")) {

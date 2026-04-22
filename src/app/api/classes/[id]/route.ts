@@ -21,7 +21,7 @@ export async function GET(
 
     const { id } = await params;
 
-    const result = await db
+    const [cls] = await db
       .select({
         id: classes.id,
         courseId: classes.courseId,
@@ -46,13 +46,13 @@ export async function GET(
       .leftJoin(enrollments, eq(classes.id, enrollments.classId))
       .where(eq(classes.id, id))
       .groupBy(classes.id, courses.name, user.name)
-      .get();
+      .limit(1);
 
-    if (!result) {
+    if (!cls) {
       return NextResponse.json({ error: "Class not found" }, { status: 404 });
     }
 
-    return NextResponse.json(result);
+    return NextResponse.json(cls);
   } catch (error) {
     console.error("Error fetching class:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

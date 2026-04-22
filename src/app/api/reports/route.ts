@@ -41,14 +41,14 @@ export async function GET(req: Request) {
       count: count()
     }).from(payments).groupBy(payments.status);
 
-    // Enrollments by month (last 6 months) - SQLite specific date logic
+    // Enrollments by month (last 6 months) - PostgreSQL date logic
     const enrollmentsByMonth = await db.select({
-      month: sql<string>`strftime('%Y-%m', ${enrollments.enrolledAt})`,
+      month: sql<string>`to_char(${enrollments.enrolledAt}, 'YYYY-MM')`,
       count: count()
     }).from(enrollments)
-      .where(sql`${enrollments.enrolledAt} >= date('now', '-6 months')`)
-      .groupBy(sql`strftime('%Y-%m', ${enrollments.enrolledAt})`)
-      .orderBy(sql`strftime('%Y-%m', ${enrollments.enrolledAt})`);
+      .where(sql`${enrollments.enrolledAt} >= CURRENT_DATE - INTERVAL '6 months'`)
+      .groupBy(sql`to_char(${enrollments.enrolledAt}, 'YYYY-MM')`)
+      .orderBy(sql`to_char(${enrollments.enrolledAt}, 'YYYY-MM')`);
 
     return NextResponse.json({
       totalStudents,

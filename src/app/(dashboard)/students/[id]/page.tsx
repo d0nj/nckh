@@ -24,12 +24,12 @@ function LoadingSkeleton() {
 }
 
 async function StudentDetailContent({ id }: { id: string }) {
-  const student = await db.select().from(user).where(eq(user.id, id)).get();
+  const [student] = await db.select().from(user).where(eq(user.id, id)).limit(1);
   if (!student) notFound();
 
   // Fetch all student details in parallel
   const [profile, enrollmentsList, gradesList, paymentsList, debtsList] = await Promise.all([
-    db.select().from(studentProfiles).where(eq(studentProfiles.userId, id)).get(),
+    db.select().from(studentProfiles).where(eq(studentProfiles.userId, id)).limit(1).then(rows => rows[0]),
 
     db.select({
       id: enrollments.id,

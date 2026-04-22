@@ -24,12 +24,12 @@ function LoadingSkeleton() {
 }
 
 async function CourseDetailContent({ id }: { id: string }) {
-  const course = await db.select().from(courses).where(eq(courses.id, id)).get();
+  const [course] = await db.select().from(courses).where(eq(courses.id, id)).limit(1);
   if (!course) notFound();
 
   // Fetch all course details in parallel
   const [program, classesList, examsList, examBankList, totalStudents] = await Promise.all([
-    db.select({ name: programs.name }).from(programs).where(eq(programs.id, course.programId)).get(),
+    db.select({ name: programs.name }).from(programs).where(eq(programs.id, course.programId)).limit(1).then(rows => rows[0]),
 
     db.select({
       id: classes.id,
@@ -57,7 +57,7 @@ async function CourseDetailContent({ id }: { id: string }) {
 
     db.select().from(examBank).where(eq(examBank.courseId, id)).orderBy(desc(examBank.createdAt)),
 
-    db.select({ count: sql<number>`count(distinct ${enrollments.studentId})` }).from(enrollments).innerJoin(classes, eq(enrollments.classId, classes.id)).where(eq(classes.courseId, id)).get(),
+    db.select({ count: sql<number>`count(distinct ${enrollments.studentId})` }).from(enrollments).innerJoin(classes, eq(enrollments.classId, classes.id)).where(eq(classes.courseId, id)).then(rows => rows[0]?.count ?? 0),
   ]);
 
   const formatDate = (date: string | null | undefined) => {
@@ -160,7 +160,7 @@ async function CourseDetailContent({ id }: { id: string }) {
             <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold tabular-nums">{totalStudents?.count || 0}</div>
+            <div className="text-2xl font-bold tabular-nums">{totalStudents || 0}</div>
           </CardContent>
         </Card>
       </div>

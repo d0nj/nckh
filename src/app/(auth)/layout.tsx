@@ -31,7 +31,7 @@ export default function AuthLayout({
             />
           </div>
           <span className="text-xl font-semibold tracking-tight">
-            Đại học Quốc gia
+            Đại học Thái Bình
           </span>
         </div>
 

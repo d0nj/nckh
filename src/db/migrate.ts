@@ -1,12 +1,12 @@
-import { createClient } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
-import { migrate } from "drizzle-orm/libsql/migrator";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { Pool } from "pg";
 
-const client = createClient({
-  url: process.env.DATABASE_URL ?? "file:sqlite.db",
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
 });
 
-const db = drizzle({ client });
+const db = drizzle({ client: pool });
 
 await migrate(db, { migrationsFolder: "./drizzle" });
 console.log("✅ Migrations applied successfully!");

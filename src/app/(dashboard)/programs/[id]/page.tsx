@@ -23,7 +23,7 @@ function LoadingSkeleton() {
 }
 
 async function ProgramDetailContent({ id }: { id: string }) {
-  const program = await db.select().from(programs).where(eq(programs.id, id)).get();
+  const [program] = await db.select().from(programs).where(eq(programs.id, id)).limit(1);
   if (!program) notFound();
 
   // Fetch program details in parallel
@@ -51,7 +51,7 @@ async function ProgramDetailContent({ id }: { id: string }) {
       status: classes.status,
     }).from(classes).innerJoin(courses, eq(classes.courseId, courses.id)).leftJoin(user, eq(classes.lecturerId, user.id)).where(eq(courses.programId, id)).orderBy(desc(classes.createdAt)),
 
-    db.select({ count: sql<number>`count(distinct ${enrollments.studentId})` }).from(enrollments).innerJoin(classes, eq(enrollments.classId, classes.id)).innerJoin(courses, eq(classes.courseId, courses.id)).where(eq(courses.programId, id)).get(),
+    db.select({ count: sql<number>`count(distinct ${enrollments.studentId})` }).from(enrollments).innerJoin(classes, eq(enrollments.classId, classes.id)).innerJoin(courses, eq(classes.courseId, courses.id)).where(eq(courses.programId, id)).then(rows => rows[0]?.count ?? 0),
   ]);
 
   const formatCurrency = (amount: number | null) => {
@@ -96,7 +96,7 @@ async function ProgramDetailContent({ id }: { id: string }) {
             <CardTitle className="text-sm font-medium">Học viên</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
-          <CardContent><div className="text-2xl font-bold tabular-nums">{totalStudents?.count || 0}</div></CardContent>
+          <CardContent><div className="text-2xl font-bold tabular-nums">{totalStudents || 0}</div></CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
