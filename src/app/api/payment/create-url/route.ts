@@ -5,8 +5,8 @@ import { db } from "@/db";
 import { debts, payments } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
-import { vnpay } from "@/lib/vnpay";
-import { ProductCode, VnpLocale, dateFormat } from "vnpay";
+import { vnpay, toVNTimeString } from "@/lib/vnpay";
+import { ProductCode, VnpLocale } from "vnpay";
 
 /**
  * Remove Vietnamese diacritics and special characters from a string.
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
       process.env.VNPAY_RETURN_URL ||
       `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/payment/vnpay-return`,
     vnp_Locale: VnpLocale.VN,
-    vnp_ExpireDate: dateFormat(new Date(Date.now() + 15 * 60 * 1000)),
+    vnp_ExpireDate: Number(toVNTimeString(new Date(Date.now() + 15 * 60 * 1000))),
   });
 
   return NextResponse.json({ paymentUrl, paymentId: newPayment.id });
